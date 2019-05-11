@@ -1,10 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 class GlobalGesture extends StatefulWidget {
-  final Widget child;
-
-  GlobalGesture(this.child);
-
   static GlobalGestureState of(
     BuildContext context, {
     bool root = false,
@@ -19,6 +15,10 @@ class GlobalGesture extends StatefulWidget {
     return state;
   }
 
+  final Widget child;
+
+  GlobalGesture(this.child);
+
   State<StatefulWidget> createState() => GlobalGestureState();
 }
 
@@ -26,11 +26,29 @@ class GlobalGestureState extends State<GlobalGesture> {
   ValueNotifier<TapUpDetails> tapUp = ValueNotifier(TapUpDetails());
 
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapUp: (details) {
-        tapUp.value = details;
-      },
-      child: widget.child,
-    );
+    return GlobalGestureInherited(
+        state: this,
+        child: GestureDetector(
+          onTapUp: (details) {
+            tapUp.value = details;
+          },
+          child: widget.child,
+        ));
+  }
+}
+
+class GlobalGestureInherited extends InheritedWidget {
+  final GlobalGestureState state;
+
+  const GlobalGestureInherited({
+    Key key,
+    @required this.state,
+    @required Widget child,
+  })  : assert(state != null),
+        assert(child != null),
+        super(key: key, child: child);
+
+  bool updateShouldNotify(GlobalGestureInherited oldWidget) {
+    return oldWidget.state != state;
   }
 }

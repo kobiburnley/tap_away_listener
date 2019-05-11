@@ -15,6 +15,9 @@ class TapAwayListener extends StatefulWidget {
 }
 
 class TapAwayListenerState extends State<TapAwayListener> {
+
+  GlobalGestureInherited _globalGestureInherited;
+
   void handleTap() {
     final state = GlobalGesture.of(context);
     final tapUp = state.tapUp;
@@ -29,6 +32,11 @@ class TapAwayListenerState extends State<TapAwayListener> {
     }
   }
 
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _globalGestureInherited = context.inheritFromWidgetOfExactType(GlobalGestureInherited);
+  }
+
   void initState() {
     super.initState();
     GlobalGesture.of(context).tapUp.addListener(handleTap);
@@ -36,7 +44,7 @@ class TapAwayListenerState extends State<TapAwayListener> {
 
   void dispose() {
     super.dispose();
-    GlobalGesture.of(context).tapUp.removeListener(handleTap);
+    _globalGestureInherited.state.tapUp.removeListener(handleTap);
   }
 
   Widget build(BuildContext context) {
