@@ -26,7 +26,7 @@ class TapAwayListenerState extends State<TapAwayListener> {
     if (box is RenderBox) {
       final pos = box.localToGlobal(Offset.zero, ancestor: null);
       final rect = fromPointAndSize(pos, box.size);
-      if (!rect.contains(tapUp.value.globalPosition)) {
+      if (!rect.contains(tapUp.value.position)) {
         widget.listener();
       }
     }
@@ -39,12 +39,17 @@ class TapAwayListenerState extends State<TapAwayListener> {
 
   void initState() {
     super.initState();
-    GlobalGesture.of(context).tapUp.addListener(handleTap);
+    final globalState = GlobalGesture.of(context);
+    globalState.tapUp.addListener(handleTap);
+//    globalState.tapDown.addListener(handleTap);
+//    globalState.tap.addListener(handleTap);
   }
 
   void dispose() {
     super.dispose();
     _globalGestureInherited.state.tapUp.removeListener(handleTap);
+//    _globalGestureInherited.state.tapDown.removeListener(handleTap);
+//    _globalGestureInherited.state.tap.removeListener(handleTap);
   }
 
   Widget build(BuildContext context) {

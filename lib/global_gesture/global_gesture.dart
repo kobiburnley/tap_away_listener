@@ -23,13 +23,15 @@ class GlobalGesture extends StatefulWidget {
 }
 
 class GlobalGestureState extends State<GlobalGesture> {
-  ValueNotifier<TapUpDetails> tapUp = ValueNotifier(TapUpDetails());
+  ValueNotifier<PointerDownEvent> tapUp = ValueNotifier(PointerDownEvent());
+//  ChangeNotifier tapDown = ChangeNotifier();
+//  ChangeNotifier tap = ChangeNotifier();
 
   Widget build(BuildContext context) {
     return GlobalGestureInherited(
         state: this,
-        child: GestureDetector(
-          onTapUp: (details) {
+        child: Listener(
+          onPointerDown: (details) {
             tapUp.value = details;
           },
           child: widget.child,
