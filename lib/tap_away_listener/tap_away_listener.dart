@@ -7,49 +7,60 @@ Rect fromPointAndSize(Offset point, Size size) {
 
 class TapAwayListener extends StatefulWidget {
   final Widget child;
-  final VoidCallback listener;
+  final VoidCallback onTapUp;
+  final VoidCallback onPointerDown;
 
-  TapAwayListener(this.child, {@required this.listener});
+  TapAwayListener({@required this.child, this.onTapUp, this.onPointerDown});
 
   State<StatefulWidget> createState() => TapAwayListenerState();
 }
 
 class TapAwayListenerState extends State<TapAwayListener> {
-
   GlobalGestureInherited _globalGestureInherited;
 
-  void handleTap() {
+  void handlePointerDown() {
     final state = GlobalGesture.of(context);
-    final tapUp = state.tapUp;
-//    final ancestor = state.context.findRenderObject();
+    handle(state.pointerDown.value.position, widget.onPointerDown);
+  }
+
+  void handleTapUp() {
+    final state = GlobalGesture.of(context);
+    handle(state.pointerDown.value.position, widget.onTapUp);
+  }
+
+  void handle(Offset offset, VoidCallback callback) {
+    if (callback == null) {
+      return;
+    }
+    //    final ancestor = state.context.findRenderObject();
+    final ancestor = null;
     final box = context?.findRenderObject();
     if (box is RenderBox) {
-      final pos = box.localToGlobal(Offset.zero, ancestor: null);
+      final pos = box.localToGlobal(Offset.zero, ancestor: ancestor);
       final rect = fromPointAndSize(pos, box.size);
-      if (!rect.contains(tapUp.value.position)) {
-        widget.listener();
+      if (!rect.contains(offset)) {
+        callback();
       }
     }
   }
 
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _globalGestureInherited = context.inheritFromWidgetOfExactType(GlobalGestureInherited);
+    _globalGestureInherited =
+        context.inheritFromWidgetOfExactType(GlobalGestureInherited);
   }
 
   void initState() {
     super.initState();
     final globalState = GlobalGesture.of(context);
-    globalState.tapUp.addListener(handleTap);
-//    globalState.tapDown.addListener(handleTap);
-//    globalState.tap.addListener(handleTap);
+    globalState.pointerDown.addListener(handlePointerDown);
+    globalState.tapUp.addListener(handleTapUp);
   }
 
   void dispose() {
     super.dispose();
-    _globalGestureInherited.state.tapUp.removeListener(handleTap);
-//    _globalGestureInherited.state.tapDown.removeListener(handleTap);
-//    _globalGestureInherited.state.tap.removeListener(handleTap);
+    _globalGestureInherited.state.pointerDown.removeListener(handlePointerDown);
+    _globalGestureInherited.state.tapUp.removeListener(handleTapUp);
   }
 
   Widget build(BuildContext context) {
